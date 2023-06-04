@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.shincha.ddh.model.dao.ChallengeDao">
+	<!-- 챌린지 전체 정보 가져오기(최신순) -->
+	<select id="selectChallengeAll" resultType="Challenge">
+		SELECT no, title, content, date_format(start_date, '%Y-%m-%d %T') as start_date, date_format(end_date, '%Y-%m-%d %T') as end_date, point, status, image, organizer, organizer_team, `modify`
+		FROM challenge
+		ORDER BY start_date DESC, end_date DESC
+	</select>
+	
+	<!-- 특정 챌린지 정보 등록 -->
+	<insert id="insertChallenge" parameterType="Challenge">
+		INSERT INTO challenge(title, content, start_date, end_date, point, image, organizer, organizer_team, `modify`)
+		VALUES(#{title}, #{content}, date_format(#{start_date}, '%Y-%m-%d %T'), date_format(#{end_date}, '%Y-%m-%d %T'), #{point}, #{image}, #{organizer}, #{organizer_team}, #{modify})
+	</insert>
+	
+	<!-- 특정 챌린지 정보 가져오기 -->
+	<select id="selectChallengeByNo" parameterType="int" resultType="Challenge">
+		SELECT no, title, content, date_format(start_date, '%Y-%m-%d %T') as start_date, date_format(end_date, '%Y-%m-%d %T') as end_date, point, status, image, organizer, organizer_team, `modify`
+		FROM challenge
+		WHERE no=#{no}
+	</select>
+	
+
+	<!-- 특정 챌린지 수정 -->
+	<update id="updateChallenge" parameterType="Challenge">
+		UPDATE challenge
+		SET title=#{title}, content=#{content}, start_date=date_format(#{start_date}, '%Y-%m-%d %T'), end_date=date_format(#{end_date}, '%Y-%m-%d %T'), image=#{image}, modify=true
+		WHERE no=#{no}
+	</update>
+	
+	
+	<!-- 특정 챌린지 삭제 -->
+	<delete id="deleteChallenge" parameterType="int">
+		DELETE FROM challenge
+		WHERE no=#{no}
+	</delete>
+	
+	
+	<!-- 특정 챌린지 팀 2개 정보 가져오기(챌린지, 팀, 유저) -->
+	<select id="team" parameterType="int" resultType="Team">
+		SELECT * FROM team
+		WHERE challenge_no=#{no}
+		ORDER BY no ASC
+	</select>
+	
+	<!-- 챌린지 만들어지는 순간 팀 2개 추가하기 -->
+	<insert id="insertTeam" parameterType="Team">
+		INSERT INTO team(team_name, team_count, challenge_no)
+		VALUES(#{team_name}, #{team_count}, #{challenge_no})
+	</insert>
+	
+	<!-- 회원이 챌린지&팀 가입 -->
+	<insert id="registTeam" parameterType="Team">
+		INSERT INTO Users_has_challenge(users_id, challenge_no, team_no)
+		VALUES(#{users_id}, #{challenge_no}, #{team_no})
+	</insert>
+	
+	<!-- 챌린지 가입 취소 / 팀취소 -->
+	<delete id="deleteTeam">
+		DELETE FROM Users_has_challenge
+		WHERE users_id=#{users_id} and challenge_no=#{challenge_no} and team_no=#{team_no}
+	</delete>
+	
+	<!-- 챌린지 진행 상태 바꾸기 -->
+	<!-- 0은 대기중 1은 시작 2는 끝 -->
+	<update id="changeStatus" parameterType="int">
+		UPDATE challenge
+		SET status = #{status}
+		WHERE no=#{no}
+	</update>
+	
+	<select id="challengeListByno" parameterType="int" resultType="Users_has_challenge">
+		SELECT * FROM Users_has_challenge WHERE challenge_no=#{challenge_no}
+	</select>
+	
+	<!-- 포인트 차감+증가 : 프론트에서 변경된 포인트 정보를 넘겨줌-->
+	<update id="changePoint" parameterType="String">
+		UPDATE users
+		SET point=${point}
+		WHERE id LIKE #{users_id}
+	</update>
+	
+	<!-- 팀인원수 증가/감소 -->
+	<update id="changeCount" parameterType="int">
+		UPDATE team
+		SET team_count=#{team_count}
+		WHERE no = #{team_no}
+	</update>
+	
+	<!-- 특정 팀 정보 가져오기 -->
+	<select id="selectTeam" parameterType="int" resultType="Team">
+		SELECT * FROM team
+		WHERE no=#{team_no}
+	</select>
+	
+	<!-- 특정 유저의 챌린지 리스트 가져오기 -->
+	<select id="myChallenge" parameterType="String" resultType="Challenge">
+		SELECT no, title, content, date_format(start_date, '%Y-%m-%d %T') as start_date, date_format(end_date, '%Y-%m-%d %T') as end_date, point, status, image, organizer, organizer_team, `modify`
+		FROM challenge
+		where no in (select challenge_no from users_has_challenge where users_id=#{users_id})
+	</select>
+	
+</mapper>

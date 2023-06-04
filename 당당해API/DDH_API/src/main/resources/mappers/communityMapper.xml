@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.shincha.ddh.model.dao.CommunityDao">
+
+	<select id="selectBoardAll" resultType="Board">
+		SELECT b.nick_name, a.no, a.title, a.content, a.`type`, a.write_date, a.view_count, a.`like`, a.`modify`, a.users_id
+		FROM board a join users b on a.users_id=b.id
+		ORDER BY write_date DESC
+	</select>
+
+	<!-- 커뮤니티 정보게시판 글 전체 가져오기 (최신순) -->
+	 <select id="selectInfoBoardAllBynow" resultType="Board">
+	 	SELECT no, title, content, type, date_format(write_date, '%Y-%m-%d %T') as write_date, view_count, `like`, `modify`,users_id
+	 	FROM board
+	 	WHERE type like "정보"
+	 	ORDER BY write_date DESC
+	 </select>
+	 
+	 <!-- 커뮤니티 정보게시판 글 전체 가져오기(최신글 중 인기순) -->
+	 <select id="selectInfoBoardAllBypopular" resultType="Board">
+	 	SELECT no, title, content, type, date_format(write_date, '%Y-%m-%d %T') as write_date, view_count, `like`, `modify`,users_id 
+	 	FROM board
+	 	WHERE type like "정보"
+	 	ORDER BY write_date DESC, `like` DESC
+	 </select>
+	 
+	 <!-- 커뮤니티 자유게시판 글 전체 가져오기(최신순) -->
+	 <select id="selectFreeBoardAllBynow" resultType="Board">
+	 	SELECT no, title, content, type, date_format(write_date, '%Y-%m-%d %T') as write_date, view_count, `like`, `modify`,users_id
+	 	FROM board
+	 	WHERE type like "자유"
+	 	ORDER BY write_date DESC
+	 </select>
+	 
+	 <!-- 커뮤니티 자유게시판 글 전체 가져오기(최신글 중 인기순) -->
+	 <select id="selectFreeBoardAllBypopular" resultType="Board">
+	 	SELECT no, title, content, type, date_format(write_date, '%Y-%m-%d %T') as write_date, view_count, `like`, `modify`,users_id
+	 	FROM board
+	 	WHERE type like "자유"
+	 	ORDER BY write_date DESC, `like` DESC
+	 </select>
+	 
+	 <!-- 커뮤니티 글 등록하기 -->
+	 <!-- user_id는 작성자 -->
+	 <insert id="insertBoard" parameterType="Board">
+	 	INSERT INTO board (users_id, title, content, type, write_date)
+		VALUES (#{users_id}, #{title}, #{content}, #{type}, date_format(now(), '%Y-%m-%d %T'))
+	 </insert>
+	 
+	 <!-- 커뮤니티 특정 글 가져오기 -->
+	 <select id="selectBoardByno" parameterType="int"  resultType="Board">
+		SELECT no, title, content, type, date_format(write_date, '%Y-%m-%d %T') as write_date, view_count, `like`, `modify`,users_id
+		FROM board
+		WHERE no=#{board_no}
+	</select>
+	
+	<!-- 특정 게시글 수정 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE board
+		SET title = #{title}, content=#{content}, modify=true
+		WHERE no=#{no}
+	</update>	
+	
+	<!-- 특정 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		DELETE FROM board
+		WHERE no=#{board_no}
+	</delete>
+	
+	<!-- 특정 게시글에 댓글 등록하기 -->
+	<insert id="insertComment" parameterType="Comment">
+		INSERT INTO comment(comment_content, write_date, board_no, users_id)
+		VALUES(#{comment_content}, date_format(now(), '%Y-%m-%d %T'), #{board_no}, #{users_id})
+	</insert>
+	
+	<!-- 특정 게시글의 댓글 가져오기 -->
+	<select id="selectAllComment" parameterType="int" resultType="Comment">
+		SELECT no, comment_content, write_date, modify, board_no, users_id
+		FROM comment
+		WHERE board_no=#{board_no}
+	
+	</select>
+	
+	<!-- 특정 게시글의 댓글 수정하기 -->
+	<!-- no는 댓글번호 -->
+	<update id="updateComment" parameterType="Comment">
+		UPDATE comment
+		SET comment_content = #{comment_content}, modify=true
+		WHERE no=#{no}
+	</update>
+	
+	<!-- 특정 게시글의 댓글 삭제하기 -->
+	<delete id="deleteComment" parameterType="int">
+		DELETE FROM comment
+		WHERE no=#{no}
+	</delete>
+	
+	<!-- 조회수 증가 -->
+	<update id="viewCnt" parameterType="int">
+		UPDATE board
+		SET view_count = view_count+1
+		WHERE no = #{board_no}
+	</update>
+	
+	<!-- 검색 기능 -->
+	<select id="search" resultType="Board" parameterType="String" >
+		SELECT no, title, content, type, date_format(write_date, '%Y-%m-%d %T') as write_date, view_count, `like`, `modify`,users_id
+		FROM board
+		<!-- 어떤 기준을 가지고 검색을 할거냐!!! -->
+		<if test="key != 'none'">
+			WHERE title LIKE concat('%', #{word}, '%') AND `type` = #{type}
+		</if>
+		ORDER BY write_date DESC
+
+	</select>
+
+</mapper>

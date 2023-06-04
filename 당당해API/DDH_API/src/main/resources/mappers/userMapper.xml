@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shincha.ddh.model.dao.UserDao">
+	<!-- 회원등록 -->
+	<insert id="insertUser" parameterType="Users">
+		INSERT INTO users(id, password, nick_name, name, email, blood_sugar, weight, muscle, HbA1c)
+		VALUES(#{id}, #{password}, #{nick_name}, #{name}, #{email}, #{blood_sugar}, #{weight}, #{muscle}, #{HbA1c});
+	</insert>
+	
+	<!-- 회원 정보 전체 가져오기 -->
+	<select id="selectAll" resultType="Users">
+		SELECT * FROM users
+		ORDER BY point DESC
+	</select>
+	
+	<!-- 특정 아이디로 회원 정보 가져오기 -->
+	<select id="selectById" parameterType="String" resultType="Users">
+		SELECT * FROM users
+		WHERE id=#{id}
+	</select>
+	
+	<select id="selectById2" parameterType="String" resultType="Users">
+		SELECT * FROM users
+		WHERE id=#{id}
+	</select>
+	
+	
+	<!-- 회원 정보 수정(비밀번호, 닉네임, 이메일, 몸무게, 근육량, 당화혈색소) -->
+	<update id="updateUser" parameterType="Users">
+		UPDATE users SET password=#{password}, weight=#{weight}, muscle=#{muscle}, HbA1c=#{HbA1c}
+		WHERE id=#{id}
+	</update>
+	
+	<!-- 특정 회원의 매일 당 정보 기록하기 -->
+	<insert id="insertBloodSugar" parameterType="One_day_blood_sugar">
+		INSERT INTO one_day_blood_sugar(cur_date, blood_sugar,users_id)
+		VALUES(date_format(now(), '%Y-%m-%d %T'), #{blood_sugar}, #{users_id})
+	</insert>
+	
+	
+	<!-- 특정 회원의 매일 당 정보 기록 가져오기 -->
+	<select id="selectSugarById" parameterType="String" resultType="One_day_blood_sugar">
+		SELECT no, date_format(cur_date, '%Y-%m-%d %T') as cur_date, blood_sugar, users_id
+		FROM one_day_blood_sugar
+		WHERE users_id=#{users_id}
+	</select>
+	
+	<!-- 특정 유저의 전체 운동 기록 가져오기 -->
+	<select id="selectExerciseById" parameterType="String" resultType="One_day_exercise">
+		SELECT no, total_time, date_format(end_time, '%Y-%m-%d %T') as end_time, users_id
+		FROM one_day_exercise
+		WHERE users_id=#{user_id}
+		ORDER BY end_time ASC
+	</select>
+	
+	<!-- 특정 유저의 전체 운동 기록 가져오기 (최신순) -->
+	<select id="selectExerciseByIdNew" parameterType="String" resultType="One_day_exercise">
+		SELECT no, total_time, date_format(end_time, '%Y-%m-%d %T') as end_time, users_id
+		FROM one_day_exercise
+		WHERE users_id=#{user_id}
+		ORDER BY end_time DESC, no DESC
+	</select>
+	
+	<!-- 종료를 눌렀을 때 타이머 시간 기록 -->
+	<!-- 얘네는 웹에서 시간을 보내줘야 함 -->
+	<insert id="insertExerciseTime" parameterType="One_day_exercise">
+		INSERT INTO one_day_exercise(total_time, end_time, users_id)
+		VALUES(#{total_time}, date_format(#{end_time}, '%Y-%m-%d %T'), #{users_id})
+	</insert>
+	
+	<!-- 나의 챌린지 정보 가져오기 -->
+	<select id="selectMyChallenge" parameterType="String" resultType="Challenge">
+		SELECT b.no, b.title, b.content, date_format(b.start_date, '%Y-%m-%d %T') as start_date, date_format(b.end_date, '%Y-%m-%d %T') as end_date, point, b.status, b.image, b.organizer, b.modify
+		FROM Users_has_challenge a, challenge b
+		WHERE a.challenge_no=b.no and users_id LIKE #{userId}
+		ORDER BY b.start_date DESC
+	</select>
+	
+	<!-- 유저 랭킹 변경 요청 -->
+	<update id="updateRank" parameterType="Users">
+		<if test="point>5000">UPDATE users SET rank="골드" WHERE id=#{users_id}</if>
+		<if test="point>100000">UPDATE users SET rank="플래티넘" WHERE id=#{users_id}</if>
+	</update>
+	
+</mapper>

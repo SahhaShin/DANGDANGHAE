@@ -1,0 +1,344 @@
+<template>
+  <div>
+    <!-- https://codepen.io/suez/pen/gadLre -->
+    <router-view />
+    <!-- 있으면 홈페이지가 그럴싸.. 예뻐질듯하여 넣어뒀습니다. ㅎ -->
+    <div class="skw-pages">
+      <div class="skw-page skw-page-1 active">
+        <div class="skw-page__half skw-page__half--left">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content"></div>
+          </div>
+        </div>
+        <div class="skw-page__half skw-page__half--right">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content">
+              <h2
+                class="skw-page__heading home-font-main-orange"
+                style="font-weight: 600"
+              >
+                젊은 당뇨를 위한 솔루션
+              </h2>
+              <p class="skw-page__description home-font-body-orange">
+                Project 당당해
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="skw-page skw-page-2">
+        <div class="skw-page__half skw-page__half--left">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content">
+              <h2
+                class="skw-page__heading home-font-main-white"
+                style="font-weight: 600"
+              >
+                CHALLENGE
+              </h2>
+              <p class="skw-page__description home-font-body-white">
+                당당해는 늘어나는 젊은 당뇨 문제를<br />해결하고자 하는 마음에서
+                시작되었습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="skw-page__half skw-page__half--right">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content"></div>
+          </div>
+        </div>
+      </div>
+      <div class="skw-page skw-page-3">
+        <div class="skw-page__half skw-page__half--left">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content"></div>
+          </div>
+        </div>
+        <div class="skw-page__half skw-page__half--right">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content">
+              <h2
+                class="skw-page__heading home-font-main-orange"
+                style="font-weight: 600"
+              >
+                CHALLENGE TOGETHER
+              </h2>
+              <p class="skw-page__description home-font-body-orange">
+                당당해만의 챌린지와 이벤트를 통해<br />모두가 더 즐겁게 건강할
+                수 있기를 바랐습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="skw-page skw-page-4">
+        <div class="skw-page__half skw-page__half--left">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content">
+              <h2
+                class="skw-page__heading home-font-main-white"
+                style="font-weight: 600"
+              >
+                READY?
+              </h2>
+              <p class="skw-page__description home-font-body-white">
+                당당해와 함께 가실 준비가 되셨나요?
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="skw-page__half skw-page__half--right">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content"></div>
+          </div>
+        </div>
+      </div>
+      <div class="skw-page skw-page-5">
+        <div class="skw-page__half skw-page__half--left">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content"></div>
+          </div>
+        </div>
+        <div class="skw-page__half skw-page__half--right">
+          <div class="skw-page__skewed">
+            <div class="skw-page__content">
+              <h2
+                class="skw-page__heading home-font-main-orange"
+                style="font-weight: 600"
+              >
+                오늘보다 내일 더 당당하게
+              </h2>
+              <p class="skw-page__description home-font-body-orange home_go_hover">
+                <router-link to="/main">당당해와 함께 하러 가기</router-link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import $ from "jquery";
+export default {
+  name: "Home",
+  mounted() {
+    $(document).ready(function () {
+      var curPage = 1;
+      var numOfPages = $(".skw-page").length;
+      var animTime = 1000;
+      var scrolling = false;
+      var pgPrefix = ".skw-page-";
+
+      function pagination() {
+        scrolling = true;
+
+        $(pgPrefix + curPage)
+          .removeClass("inactive")
+          .addClass("active");
+        $(pgPrefix + (curPage - 1)).addClass("inactive");
+        $(pgPrefix + (curPage + 1)).removeClass("active");
+
+        setTimeout(function () {
+          scrolling = false;
+        }, animTime);
+      }
+
+      function navigateUp() {
+        if (curPage === 1) return;
+        curPage--;
+        pagination();
+      }
+
+      function navigateDown() {
+        if (curPage === numOfPages) return;
+        curPage++;
+        pagination();
+      }
+
+      $(document).on("mousewheel DOMMouseScroll", function (e) {
+        if (scrolling) return;
+        if (e.originalEvent.wheelDelta > 0 || e.originalEvent.detail < 0) {
+          navigateUp();
+        } else {
+          navigateDown();
+        }
+      });
+
+      $(document).on("keydown", function (e) {
+        if (scrolling) return;
+        if (e.which === 38) {
+          navigateUp();
+        } else if (e.which === 40) {
+          navigateDown();
+        }
+      });
+    });
+  },
+};
+</script>
+
+<style>
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+* {
+  font-family: "Pretendard-Regular";
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.skw-pages {
+  overflow: hidden;
+  position: relative;
+  height: 100vh;
+}
+
+.skw-page {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+.skw-page__half {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100vh;
+  transition: transform 1s;
+}
+.skw-page__half--left {
+  left: 0;
+  transform: translate3d(-32.4vh, 100%, 0);
+}
+.skw-page__half--right {
+  left: 50%;
+  transform: translate3d(32.4vh, -100%, 0);
+}
+.skw-page.active .skw-page__half {
+  transform: translate3d(0, 0, 0);
+}
+.skw-page__skewed {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 140%;
+  height: 100%;
+  transform: skewX(-18deg);
+  background: #000;
+}
+.skw-page__half--left .skw-page__skewed {
+  left: -40%;
+}
+.skw-page__half--right .skw-page__skewed {
+  right: -40%;
+}
+.skw-page__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column wrap;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 30%;
+  color: #fff;
+  transform: skewX(18deg);
+  transition: transform 1s, opacity 1s;
+  background-size: cover;
+}
+.skw-page__half--left .skw-page__content {
+  padding-left: 30%;
+  padding-right: 30%;
+  transform-origin: 100% 0;
+}
+.skw-page__half--right .skw-page__content {
+  padding-left: 30%;
+  padding-right: 30%;
+  transform-origin: 0 100%;
+}
+.skw-page.inactive .skw-page__content {
+  opacity: 0.5;
+  transform: skewX(18deg) scale(0.95);
+}
+.skw-page__heading {
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  font-size: 25px;
+  text-align: center;
+}
+.skw-page__description {
+  font-size: 18px;
+  text-align: center;
+}
+.skw-page__link {
+  color: #fd7577;
+}
+.skw-page-1 .skw-page__half--left .skw-page__content {
+  background-image: url("../assets/section2.jpg");
+}
+.skw-page-1 .skw-page__half--right .skw-page__content {
+  background: white;
+}
+.skw-page-2 .skw-page__half--left .skw-page__content {
+  background: #fb9f4c;
+}
+.skw-page-2 .skw-page__half--right .skw-page__content {
+  background-image: url("../assets/section3.jpg");
+}
+.skw-page-3 .skw-page__half--left .skw-page__content {
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/mousover-img-2.jpg");
+}
+.skw-page-3 .skw-page__half--right .skw-page__content {
+  background: white;
+}
+.skw-page-4 .skw-page__half--left .skw-page__content {
+  background: #fd7577;
+}
+.skw-page-4 .skw-page__half--right .skw-page__content {
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/sections-3.jpg");
+}
+.skw-page-5 .skw-page__half--left .skw-page__content {
+  background-image: url("../assets/section1.jpg");
+}
+.skw-page-5 .skw-page__half--right .skw-page__content {
+  background: white;
+}
+
+.home-font-main-white {
+  color: white;
+}
+
+.home-font-body-white {
+  color: white;
+}
+
+.home-font-main-orange {
+  color: #fb9f4c;
+}
+
+.home-font-body-orange {
+  color: #fb9f4c;
+}
+
+.home-font-main-point {
+  color: #fd7577;
+}
+
+.home_go_hover :hover {
+  color: #fd7577;
+}
+</style>
