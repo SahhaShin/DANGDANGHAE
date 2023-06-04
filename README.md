@@ -21,5 +21,3 @@ https://www.youtube.com/watch?v=xo91LtBXNI0
 ![11](https://github.com/SahhaShin/DANGDANGHAE/assets/33896511/d21fa8b7-6c58-4e45-b1e4-ef7948882716)
 ![12](https://github.com/SahhaShin/DANGDANGHAE/assets/33896511/edfbbbab-5f6e-43cc-8f10-6785cebc6aeb)
 ![13](https://github.com/SahhaShin/DANGDANGHAE/assets/33896511/6ce09a10-cf26-426e-8868-035e0398208b)
-
-+ 자세한 내용은 PDF 및 아래 영상에서 확인하실 수 있습니다.
